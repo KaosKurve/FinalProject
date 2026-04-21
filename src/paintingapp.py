@@ -7,9 +7,9 @@ Width = 800
 Height = 600
 active_size = 0
 active_color = 'white'
-
 screen = pygame.display.set_mode([Width, Height])
 pygame.display.set_caption('Paint!')
+painting = []
 
 
 def draw_menu():
@@ -39,11 +39,23 @@ def draw_menu():
     return brush_list, color_rect, rgb_list
 
 
+def draw_painting(paints):
+    for i in range(len(paints)):
+        pygame.draw.circle(screen, paints[i][0], paints[i][1], paints[i][2])
+
+
 run = True
 while run:
     timer.tick(fps)
     screen.fill('white')
     mouse = pygame.mouse.get_pos()
+    left_click = pygame.mouse.get_pressed()[0]
+    if mouse[1] > 70:
+        pygame.draw.circle(screen, active_color, mouse, active_size)
+    if left_click and mouse[1] > 70:
+        painting.append((active_color, mouse, active_size))
+    draw_painting(painting)
+    
     brushes, colors, rgbs = draw_menu()
 
     for event in pygame.event.get():
