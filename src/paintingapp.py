@@ -23,7 +23,16 @@ def draw_menu():
     s_brush = pygame.draw.rect(screen, 'black', [190, 10, 50, 50])
     pygame.draw.circle(screen, 'white', (215, 35), 5)
 
-    
+    blue = pygame.draw.rect(screen, (0, 0, 255), [Width - 35, 10, 25, 25])
+    red = pygame.draw.rect(screen, (255, 0, 0), [Width - 35, 35, 25, 25])
+    green = pygame.draw.rect(screen, (0, 255, 0), [Width - 60, 10, 25, 25])
+    yellow = pygame.draw.rect(screen, (255, 255, 0), [Width - 60, 35, 25, 25])
+    teal = pygame.draw.rect(screen, (0, 255, 255), [Width - 85, 10, 25, 25])
+    purple = pygame.draw.rect(screen, (255, 0, 255), [Width - 85, 35, 25, 25])
+    white = pygame.draw.rect(screen, (0, 0, 0), [Width - 110, 10, 25, 25])
+    black = pygame.draw.rect(screen, (255, 255, 255), [Width - 110, 35, 25, 25])
+
+
 
 run = True
 while run:
