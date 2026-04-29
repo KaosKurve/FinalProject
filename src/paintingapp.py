@@ -8,7 +8,7 @@ Height = 600
 active_size = 0
 active_color = 'white'
 screen = pygame.display.set_mode([Width, Height])
-pygame.display.set_caption('Paint!')
+pygame.display.set_caption('My Painting App!')
 painting = []
 
 
@@ -16,6 +16,7 @@ def draw_menu(size, color):
     pygame.draw.rect(screen, 'gray', [0, 0 , Width, 70])
     pygame.draw.line(screen, 'black', (0, 70), (Width, 70), 3)
 
+    #brush sizes
     xl_brush = pygame.draw.rect(screen, 'black', [10, 10, 50, 50])
     pygame.draw.circle(screen, 'white', (35, 35), 20)
     l_brush = pygame.draw.rect(screen, 'black', [70, 10, 50, 50])
@@ -24,7 +25,10 @@ def draw_menu(size, color):
     pygame.draw.circle(screen, 'white', (155, 35), 10)
     s_brush = pygame.draw.rect(screen, 'black', [190, 10, 50, 50])
     pygame.draw.circle(screen, 'white', (215, 35), 5)
-    brush_list = [xl_brush, l_brush, m_brush, s_brush]
+    eraser = pygame.draw.rect(screen, 'black', [250, 10, 50, 50])
+    pygame.draw.rect(screen, 'white', (260, 15, 30, 40), width = 4, border_top_left_radius = 8, border_top_right_radius = 8)
+    pygame.draw.rect(screen, 'white', (260, 25, 30, 4))
+    brush_list = [xl_brush, l_brush, m_brush, s_brush, eraser]
     if size == 20:
         pygame.draw.rect(screen, 'green', [10, 10, 50, 50], 3)
     if size == 15:
@@ -34,9 +38,11 @@ def draw_menu(size, color):
     if size == 5:
         pygame.draw.rect(screen, 'green', [190, 10, 50, 50], 3)
 
+    #current color selected
     pygame.draw.circle(screen, color, (400, 35), 30)
     pygame.draw.circle(screen, 'dark grey', (400, 35), 30, 3)
 
+    #colors you can choose
     blue = pygame.draw.rect(screen, (0, 0, 255), [Width - 35, 10, 25, 25])
     red = pygame.draw.rect(screen, (255, 0, 0), [Width - 35, 35, 25, 25])
     green = pygame.draw.rect(screen, (0, 255, 0), [Width - 60, 10, 25, 25])
