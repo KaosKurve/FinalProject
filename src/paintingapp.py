@@ -7,12 +7,13 @@ Width = 800
 Height = 600
 active_size = 0
 active_color = 'white'
+active_tool = 'brush'
 screen = pygame.display.set_mode([Width, Height])
 pygame.display.set_caption('My Painting App!')
 painting = []
 
 
-def draw_menu(size, color):
+def draw_menu(size, color, tool):
     pygame.draw.rect(screen, 'gray', [0, 0 , Width, 70])
     pygame.draw.line(screen, 'black', (0, 70), (Width, 70), 3)
 
@@ -29,14 +30,18 @@ def draw_menu(size, color):
     pygame.draw.rect(screen, 'white', (260, 15, 30, 40), width = 4, border_top_left_radius = 8, border_top_right_radius = 8)
     pygame.draw.rect(screen, 'white', (260, 25, 30, 4))
     brush_list = [xl_brush, l_brush, m_brush, s_brush, eraser]
-    if size == 20:
-        pygame.draw.rect(screen, 'green', [10, 10, 50, 50], 3)
-    if size == 15:
-        pygame.draw.rect(screen, 'green', [70, 10, 50, 50], 3)
-    if size == 10:
-        pygame.draw.rect(screen, 'green', [130, 10, 50, 50], 3)
-    if size == 5:
-        pygame.draw.rect(screen, 'green', [190, 10, 50, 50], 3)
+    if tool == 'brush':
+        if size == 20:
+            pygame.draw.rect(screen, 'green', [10, 10, 50, 50], 3)
+        elif size == 15:
+            pygame.draw.rect(screen, 'green', [70, 10, 50, 50], 3)
+        elif size == 10:
+            pygame.draw.rect(screen, 'green', [130, 10, 50, 50], 3)
+        elif size == 5:
+            pygame.draw.rect(screen, 'green', [190, 10, 50, 50], 3)
+    
+    elif tool == 'eraser':
+        pygame.draw.rect(screen, 'green', [250, 10, 50, 50], 3)
 
     #current color selected
     pygame.draw.circle(screen, color, (400, 35), 30)
@@ -68,13 +73,19 @@ while run:
     screen.fill('white')
     mouse = pygame.mouse.get_pos()
     left_click = pygame.mouse.get_pressed()[0]
-
+    
     if left_click and mouse[1] > 70:
-        painting.append((active_color, mouse, active_size))
+        if active_tool == 'eraser':
+            color_to_use = (255, 255, 255)
+        else:
+            color_to_use = active_color
+        
+        painting.append((color_to_use, mouse, active_size))
+
     draw_painting(painting)
     if mouse[1] > 70:
         pygame.draw.circle(screen, active_color, mouse, active_size)
-    brushes, colors, rgbs = draw_menu(active_size, active_color)
+    brushes, colors, rgbs = draw_menu(active_size, active_color, active_tool)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -83,7 +94,12 @@ while run:
         if event.type == pygame.MOUSEBUTTONDOWN:
             for i in range(len(brushes)):
                 if brushes[i].collidepoint(event.pos):
-                    active_size = 20 - (i * 5)
+                    if i == 4:
+                        active_tool = 'eraser'
+                        active_size = 20
+                    else:
+                        active_tool = 'brush'
+                        active_size = 20 - (i * 5)
             
             for i in range(len(colors)):
                 if colors[i].collidepoint(event.pos):
