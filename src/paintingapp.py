@@ -131,5 +131,20 @@ while run:
                 redo_stack.clear()
                 drawingstroke = True
 
+        #keyboard commands
+        if event.type == pygame.KEYDOWN:
+            keys = pygame.key.get_pressed()
+        
+            if keys[pygame.K_LCTRL] or keys[pygame.K_RCTRL]:
+                if event.key == pygame.K_z:
+                    if undo_stack:
+                        redo_stack.append(canvas.copy())
+                        canvas = undo_stack.pop()
+            
+                elif event.key == pygame.K_y:
+                    if redo_stack:
+                        undo_stack.append(canvas.copy())
+                        canvas = redo_stack.pop()
+
     pygame.display.flip()
 pygame.quit()
