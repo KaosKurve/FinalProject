@@ -37,6 +37,8 @@ def draw_menu(size, color, tool):
     pygame.draw.rect(screen, 'white', [320, 25, 30, 30])
     pygame.draw.rect(screen, 'white', [315, 15, 40, 20], width = 3)
     brush_list = [xl_brush, l_brush, m_brush, s_brush, eraser, bucket]
+    
+    #tool selection
     if tool == 'brush':
         if size == 20:
             pygame.draw.rect(screen, 'green', [10, 10, 50, 50], 3)
@@ -78,6 +80,13 @@ def draw_menu(size, color, tool):
                 (0, 255, 255), (255, 0, 255),(0, 0, 0), (255, 255, 255)]
     return brush_list, color_rect, rgb_list, undo_button, redo_button
 
+def flood_fill(surface, start_pos, fill_color):
+    x, y = start_pos
+
+    target_color = surface.get_at((x, y))
+
+    if target_color == fill_color:
+        return
 
 run = True
 while run:
