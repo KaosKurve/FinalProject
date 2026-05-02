@@ -33,7 +33,10 @@ def draw_menu(size, color, tool):
     eraser = pygame.draw.rect(screen, 'black', [250, 10, 50, 50])
     pygame.draw.rect(screen, 'white', (260, 15, 30, 40), width = 4, border_top_left_radius = 8, border_top_right_radius = 8)
     pygame.draw.rect(screen, 'white', (260, 25, 30, 4))
-    brush_list = [xl_brush, l_brush, m_brush, s_brush, eraser]
+    bucket = pygame.draw.rect(screen, 'black', [310, 10, 50, 50])
+    pygame.draw.rect(screen, 'white', [320, 25, 30, 30])
+    pygame.draw.rect(screen, 'white', [315, 15, 40, 20], width = 3)
+    brush_list = [xl_brush, l_brush, m_brush, s_brush, eraser, bucket]
     if tool == 'brush':
         if size == 20:
             pygame.draw.rect(screen, 'green', [10, 10, 50, 50], 3)
@@ -47,6 +50,9 @@ def draw_menu(size, color, tool):
     elif tool == 'eraser':
         pygame.draw.rect(screen, 'green', [250, 10, 50, 50], 3)
 
+    elif tool == 'bucket':
+        pygame.draw.rect(screen, 'green', [310, 10, 50, 50], 3)
+
     #undo/redo paint
     redo_button = pygame.draw.rect(screen, 'black', [630, 10, 50, 50])
     pygame.draw.polygon(screen, 'white', ((640, 20), (670, 35), (640, 50)))
@@ -56,7 +62,6 @@ def draw_menu(size, color, tool):
     #current color selected
     pygame.draw.circle(screen, color, (400, 35), 30)
     pygame.draw.circle(screen, 'dark grey', (400, 35), 30, 3)
-
 
 
     #colors you can choose
