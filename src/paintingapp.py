@@ -87,6 +87,20 @@ def flood_fill(surface, start_pos, fill_color):
 
     if target_color == fill_color:
         return
+    stack = [(x, y)]
+
+    while stack:
+        x, y = stack.pop()
+        if x < 0 or x >= Width or y < 70 or y >= Height:
+            continue
+        if surface.get_at((x, y)) != target_color:
+            continue
+
+        surface.set_at((x, y), fill_color)
+        stack.append((x + 1, y))
+        stack.append((x - 1, y))
+        stack.append((x, y + 1))
+        stack.append((x, y - 1))
 
 run = True
 while run:
@@ -96,7 +110,7 @@ while run:
     mouse = pygame.mouse.get_pos()
     left_click = pygame.mouse.get_pressed()[0]
     
-    if left_click and mouse[1] > 70:
+    if left_click and mouse[1] > 70 and active_tool != 'bucket':
         if active_tool == 'eraser':
             color_to_use = (255, 255, 255)
         else:
@@ -122,6 +136,8 @@ while run:
                     if i == 4:
                         active_tool = 'eraser'
                         active_size = 20
+                    elif i == 5:
+                        active_tool = 'bucket'
                     else:
                         active_tool = 'brush'
                         active_size = 20 - (i * 5)
@@ -140,9 +156,10 @@ while run:
                     undo_stack.append(canvas.copy())
                     canvas = redo_stack.pop()
             
-            elif event.pos[1] > 70:
+            elif event.pos[1] > 70 and active_tool == 'bucket':
                 undo_stack.append(canvas.copy())
                 redo_stack.clear()
+                flood_fill(canvas, event.pos, active_color)
                 drawingstroke = True
 
         #keyboard commands
