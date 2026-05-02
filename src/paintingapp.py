@@ -102,6 +102,10 @@ def flood_fill(surface, start_pos, fill_color):
         stack.append((x, y + 1))
         stack.append((x, y - 1))
 
+def save_state():
+    undo_stack.append(canvas.copy())
+    redo_stack.clear()
+
 run = True
 while run:
     timer.tick(fps)
@@ -111,6 +115,9 @@ while run:
     left_click = pygame.mouse.get_pressed()[0]
     
     if left_click and mouse[1] > 70 and active_tool != 'bucket':
+        if not drawingstroke:
+            save_state()
+            drawingstroke = True
         if active_tool == 'eraser':
             color_to_use = (255, 255, 255)
         else:
@@ -157,10 +164,12 @@ while run:
                     canvas = redo_stack.pop()
             
             elif event.pos[1] > 70 and active_tool == 'bucket':
-                undo_stack.append(canvas.copy())
-                redo_stack.clear()
+                save_state()
                 flood_fill(canvas, event.pos, active_color)
                 drawingstroke = True
+
+        if event.type == pygame.MOUSEBUTTONUP:
+            drawingstroke = False
 
         #keyboard commands
         if event.type == pygame.KEYDOWN:
