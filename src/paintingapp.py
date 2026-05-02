@@ -10,7 +10,8 @@ active_color = 'white'
 active_tool = 'brush'
 screen = pygame.display.set_mode([Width, Height])
 pygame.display.set_caption('My Painting App!')
-painting = []
+canvas = pygame.Surface((Width, Height))
+canvas.fill("white")
 
 
 def draw_menu(size, color, tool):
@@ -62,15 +63,11 @@ def draw_menu(size, color, tool):
     return brush_list, color_rect, rgb_list
 
 
-def draw_painting(paints):
-    for i in range(len(paints)):
-        pygame.draw.circle(screen, paints[i][0], paints[i][1], paints[i][2])
-
-
 run = True
 while run:
     timer.tick(fps)
     screen.fill('white')
+
     mouse = pygame.mouse.get_pos()
     left_click = pygame.mouse.get_pressed()[0]
     
@@ -80,11 +77,14 @@ while run:
         else:
             color_to_use = active_color
         
-        painting.append((color_to_use, mouse, active_size))
+        pygame.draw.circle(canvas, color_to_use, mouse, active_size)
 
-    draw_painting(painting)
+    screen.blit(canvas, (0, 0))
+
     if mouse[1] > 70:
+        preview_color = (255, 255, 255) if active_tool == "eraser" else active_color
         pygame.draw.circle(screen, active_color, mouse, active_size)
+    
     brushes, colors, rgbs = draw_menu(active_size, active_color, active_tool)
 
     for event in pygame.event.get():
