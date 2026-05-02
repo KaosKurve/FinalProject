@@ -13,6 +13,7 @@ pygame.display.set_caption('My Painting App!')
 canvas = pygame.Surface((Width, Height))
 canvas.fill("white")
 undo_stack = []
+redo_stack = []
 drawingstroke = False
 
 
@@ -46,9 +47,11 @@ def draw_menu(size, color, tool):
     elif tool == 'eraser':
         pygame.draw.rect(screen, 'green', [250, 10, 50, 50], 3)
 
-    #undo paint
-    undo_button = pygame.draw.rect(screen, 'black', [630, 10, 50, 50])
+    #undo/redo paint
+    redo_button = pygame.draw.rect(screen, 'black', [630, 10, 50, 50])
     pygame.draw.polygon(screen, 'white', ((640, 20), (670, 35), (640, 50)))
+    undo_button = pygame.draw.rect(screen, 'black', [570, 10, 50, 50])
+    pygame.draw.polygon(screen, 'white', ((610, 20), (580, 35), (610, 50)))
 
     #current color selected
     pygame.draw.circle(screen, color, (400, 35), 30)
@@ -68,7 +71,7 @@ def draw_menu(size, color, tool):
     color_rect = [blue, red, green, yellow, teal, purple, white, black]
     rgb_list = [(0, 0, 255), (255, 0, 0), (0, 255, 0), (255, 255, 0),
                 (0, 255, 255), (255, 0, 255),(0, 0, 0), (255, 255, 255)]
-    return brush_list, color_rect, rgb_list, undo_button
+    return brush_list, color_rect, rgb_list, undo_button, redo_button
 
 
 run = True
@@ -93,7 +96,7 @@ while run:
         preview_color = (255, 255, 255) if active_tool == "eraser" else active_color
         pygame.draw.circle(screen, active_color, mouse, active_size)
     
-    brushes, colors, rgbs, undo_button = draw_menu(active_size, active_color, active_tool)
+    brushes, colors, rgbs, undo_button, redo_button = draw_menu(active_size, active_color, active_tool)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -113,13 +116,20 @@ while run:
                 if colors[i].collidepoint(event.pos):
                     active_color = rgbs[i]
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
             if undo_button.collidepoint(event.pos):
                 if undo_stack:
+                    redo_stack.append(canvas.copy())
                     canvas = undo_stack.pop()
+            
+            if redo_button.collidepoint(event.pos):
+                if redo_stack:
+                    undo_stack.append(canvas.copy())
+                    canvas = redo_stack.pop()
+            
             elif event.pos[1] > 70:
                 undo_stack.append(canvas.copy())
-                drawing = True
+                redo_stack.clear()
+                drawingstroke = True
 
     pygame.display.flip()
 pygame.quit()
