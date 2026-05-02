@@ -12,6 +12,8 @@ screen = pygame.display.set_mode([Width, Height])
 pygame.display.set_caption('My Painting App!')
 canvas = pygame.Surface((Width, Height))
 canvas.fill("white")
+undo_stack = []
+drawingstroke = False
 
 
 def draw_menu(size, color, tool):
@@ -44,9 +46,15 @@ def draw_menu(size, color, tool):
     elif tool == 'eraser':
         pygame.draw.rect(screen, 'green', [250, 10, 50, 50], 3)
 
+    #undo paint
+    undo_button = pygame.draw.rect(screen, 'black', [630, 10, 50, 50])
+    pygame.draw.polygon(screen, 'white', ((640, 20), (670, 35), (640, 50)))
+
     #current color selected
     pygame.draw.circle(screen, color, (400, 35), 30)
     pygame.draw.circle(screen, 'dark grey', (400, 35), 30, 3)
+
+
 
     #colors you can choose
     blue = pygame.draw.rect(screen, (0, 0, 255), [Width - 35, 10, 25, 25])
@@ -60,7 +68,7 @@ def draw_menu(size, color, tool):
     color_rect = [blue, red, green, yellow, teal, purple, white, black]
     rgb_list = [(0, 0, 255), (255, 0, 0), (0, 255, 0), (255, 255, 0),
                 (0, 255, 255), (255, 0, 255),(0, 0, 0), (255, 255, 255)]
-    return brush_list, color_rect, rgb_list
+    return brush_list, color_rect, rgb_list, undo_button
 
 
 run = True
@@ -85,7 +93,7 @@ while run:
         preview_color = (255, 255, 255) if active_tool == "eraser" else active_color
         pygame.draw.circle(screen, active_color, mouse, active_size)
     
-    brushes, colors, rgbs = draw_menu(active_size, active_color, active_tool)
+    brushes, colors, rgbs, undo_button = draw_menu(active_size, active_color, active_tool)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -104,6 +112,14 @@ while run:
             for i in range(len(colors)):
                 if colors[i].collidepoint(event.pos):
                     active_color = rgbs[i]
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if undo_button.collidepoint(event.pos):
+                if undo_stack:
+                    canvas = undo_stack.pop()
+            elif event.pos[1] > 70:
+                undo_stack.append(canvas.copy())
+                drawing = True
 
     pygame.display.flip()
 pygame.quit()
