@@ -237,7 +237,10 @@ while run:
         #keyboard commands
         if event.type == pygame.KEYDOWN:
             keys = pygame.key.get_pressed()
-        
+
+            if event.key == pygame.K_ESCAPE:
+                run = False
+
             if keys[pygame.K_LCTRL] or keys[pygame.K_RCTRL]:
                 if event.key == pygame.K_z:
                     if undo_stack:
