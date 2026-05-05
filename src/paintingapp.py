@@ -1,6 +1,7 @@
 import pygame
 pygame.init()
 
+#global variables
 fps = 240
 timer = pygame.time.Clock()
 Width = 800
@@ -17,6 +18,9 @@ canvas.fill("white")
 undo_stack = []
 redo_stack = []
 drawingstroke = False
+bombs = []
+bomb_delay = 2000
+explosion_size = 80
 
 
 def draw_menu(size, color, tool):
@@ -117,6 +121,23 @@ def flood_fill(surface, start_pos, fill_color):
         stack.append((x - 1, y))
         stack.append((x, y + 1))
         stack.append((x, y - 1))
+
+    
+def draw_bomb(position):
+    x, y = position
+
+    pygame.draw.circle(screen, 'black', (x, y), 15)
+    pygame.draw.rect(screen, 'black', (x-10, y-25, 20, 10))
+    pygame.draw.rect(screen, 'black', (x-2, y-32, 4, 10))
+
+def explodebomb(position, color):
+    x, y = position
+    half = explosion_size // 2
+
+    pygame.draw.circle(canvas, color, (x, y), 20)
+    pygame.draw.rect(canvas, color, (x-half, y-10, explosion_size, 20))
+    pygame.draw.rect(canvas, color, (x-10, y-half, 20, explosion_size))
+
 
 def save_state():
     undo_stack.append(canvas.copy())
