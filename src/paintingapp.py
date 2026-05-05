@@ -21,6 +21,7 @@ drawingstroke = False
 bombs = []
 bomb_delay = 2000
 explosion_size = 200
+prev_mouse = None
 
 
 def draw_menu(size, color, tool):
@@ -166,7 +167,12 @@ while run:
         else:
             color_to_use = active_color
         
-        pygame.draw.circle(canvas, color_to_use, mouse, active_size)
+        if prev_mouse is not None:
+            mid_x = (prev_mouse[0] + mouse[0]) // 2
+            mid_y = (prev_mouse[1] + mouse[1]) // 2
+            pygame.draw.line(canvas, color_to_use, prev_mouse, active_size * 2)
+        else:
+            pygame.draw.circle(canvas, color_to_use, mouse, active_size)
 
     screen.blit(canvas, (70, 70), (70, 70, Width-70, Height-70))
     current_time = pygame.time.get_ticks()
@@ -233,6 +239,7 @@ while run:
 
         if event.type == pygame.MOUSEBUTTONUP:
             drawingstroke = False
+            prev_mouse = None
 
         #keyboard commands
         if event.type == pygame.KEYDOWN:
