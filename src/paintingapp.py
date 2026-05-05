@@ -123,12 +123,12 @@ def flood_fill(surface, start_pos, fill_color):
         stack.append((x, y - 1))
 
     
-def draw_bomb(position):
+def draw_bomb(position, color):
     x, y = position
 
-    pygame.draw.circle(screen, 'black', (x, y), 15)
-    pygame.draw.rect(screen, 'black', (x-10, y-25, 20, 10))
-    pygame.draw.rect(screen, 'black', (x-2, y-32, 4, 10))
+    pygame.draw.circle(screen, color, (x, y), 15)
+    pygame.draw.rect(screen, color, (x-10, y-16, 20, 10))
+    pygame.draw.rect(screen, color, (x-2, y-23, 5, 10))
 
 def explodebomb(position, color):
     x, y = position
@@ -151,7 +151,8 @@ while run:
     mouse = pygame.mouse.get_pos()
     left_click = pygame.mouse.get_pressed()[0]
     
-    if left_click and mouse[0] > SidebarWidth and mouse[1] > ToolbarHeight and active_tool != 'bucket':
+    if (left_click and mouse[0] > SidebarWidth and mouse[1] > ToolbarHeight
+        and active_tool not in ['bucket', 'bombtool']):
         if not drawingstroke:
             save_state()
             drawingstroke = True
@@ -163,6 +164,16 @@ while run:
         pygame.draw.circle(canvas, color_to_use, mouse, active_size)
 
     screen.blit(canvas, (70, 70), (70, 70, Width-70, Height-70))
+    current_time = pygame.time.get_ticks()
+
+    for bomb in bombs[:]:
+        elapsed = current_time - bomb['time']
+        if elapsed >= bomb_delay:
+            save_state()
+            explodebomb(bomb["pos"], bomb["color"])
+            bombs.remove(bomb)
+        else:
+            draw_bomb(bomb["pos"], bomb["color"])
 
     #preview circle
     if mouse[0] > SidebarWidth and mouse[1] > ToolbarHeight:
@@ -207,6 +218,13 @@ while run:
                 save_state()
                 flood_fill(canvas, event.pos, active_color)
                 drawingstroke = True
+
+            elif (event.pos[0] > SidebarWidth and event.pos[1] > ToolbarHeight and active_tool == 'bombtool'):
+                bombs.append({
+                    "pos": event.pos,
+                    "time": pygame.time.get_ticks(),
+                    "color": active_color
+                })
 
         if event.type == pygame.MOUSEBUTTONUP:
             drawingstroke = False
