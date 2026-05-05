@@ -4,7 +4,7 @@ pygame.init()
 #global variables
 fps = 240
 timer = pygame.time.Clock()
-Width = 800
+Width = 900
 Height = 600
 ToolbarHeight = 70
 SidebarWidth = 70
@@ -75,10 +75,10 @@ def draw_menu(size, color, tool):
         pygame.draw.rect(screen, 'green', [10, 80, 50, 50], 3)
 
     #undo/redo paint
-    redo_button = pygame.draw.rect(screen, 'black', [630, 10, 50, 50])
-    pygame.draw.polygon(screen, 'white', ((640, 20), (670, 35), (640, 50)))
-    undo_button = pygame.draw.rect(screen, 'black', [570, 10, 50, 50])
-    pygame.draw.polygon(screen, 'white', ((610, 20), (580, 35), (610, 50)))
+    redo_button = pygame.draw.rect(screen, 'black', [Width - 175, 10, 50, 50])
+    pygame.draw.polygon(screen, 'white', ((Width - 165, 20), (Width - 135, 35), (Width - 165, 50)))
+    undo_button = pygame.draw.rect(screen, 'black', [Width - 235, 10, 50, 50])
+    pygame.draw.polygon(screen, 'white', ((Width - 195, 20), (Width - 225, 35), (Width - 195, 50)))
 
     #current color selected
     pygame.draw.circle(screen, color, (400, 35), 30)
