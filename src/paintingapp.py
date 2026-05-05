@@ -5,6 +5,8 @@ fps = 240
 timer = pygame.time.Clock()
 Width = 800
 Height = 600
+ToolbarHeight = 70
+SidebarWidth = 70
 active_size = 0
 active_color = 'white'
 active_tool = 'brush'
@@ -18,10 +20,13 @@ drawingstroke = False
 
 
 def draw_menu(size, color, tool):
+    #toolbar
+    pygame.draw.line(screen, 'black', (70, 0), (70, Height), 3)
     pygame.draw.rect(screen, 'gray', [0, 0 , Width, 70])
+    pygame.draw.rect(screen, 'gray', [0, 0 , 70, Height])
     pygame.draw.line(screen, 'black', (0, 70), (Width, 70), 3)
 
-    #brush sizes
+    #brushes
     xl_brush = pygame.draw.rect(screen, 'black', [10, 10, 50, 50])
     pygame.draw.circle(screen, 'white', (35, 35), 20)
     l_brush = pygame.draw.rect(screen, 'black', [70, 10, 50, 50])
@@ -36,8 +41,15 @@ def draw_menu(size, color, tool):
     bucket = pygame.draw.rect(screen, 'black', [310, 10, 50, 50])
     pygame.draw.rect(screen, 'white', [320, 25, 30, 30])
     pygame.draw.rect(screen, 'white', [315, 15, 40, 20], width = 3)
-    brush_list = [xl_brush, l_brush, m_brush, s_brush, eraser, bucket]
     
+    #Toys
+    bombtool = pygame.draw.rect(screen, 'black', [10, 80, 50, 50])
+    pygame.draw.circle(screen, 'white', (35, 108), 15)
+    pygame.draw.rect(screen, 'white', (25, 93, 20, 10))
+    pygame.draw.rect(screen, 'white', (33, 86, 5, 10))
+
+    brush_list = [xl_brush, l_brush, m_brush, s_brush, eraser, bucket, bombtool]
+
     #tool selection
     if tool == 'brush':
         if size == 20:
@@ -54,6 +66,9 @@ def draw_menu(size, color, tool):
 
     elif tool == 'bucket':
         pygame.draw.rect(screen, 'green', [310, 10, 50, 50], 3)
+    
+    elif tool == 'bombtool':
+        pygame.draw.rect(screen, 'green', [10, 80, 50, 50], 3)
 
     #undo/redo paint
     redo_button = pygame.draw.rect(screen, 'black', [630, 10, 50, 50])
@@ -81,6 +96,7 @@ def draw_menu(size, color, tool):
     return brush_list, color_rect, rgb_list, undo_button, redo_button
 
 def flood_fill(surface, start_pos, fill_color):
+    #paint bucket functionality
     x, y = start_pos
 
     target_color = surface.get_at((x, y))
@@ -91,7 +107,7 @@ def flood_fill(surface, start_pos, fill_color):
 
     while stack:
         x, y = stack.pop()
-        if x < 0 or x >= Width or y < 70 or y >= Height:
+        if x < SidebarWidth or x >= Width or y < ToolbarHeight or y >= Height:
             continue
         if surface.get_at((x, y)) != target_color:
             continue
@@ -114,7 +130,7 @@ while run:
     mouse = pygame.mouse.get_pos()
     left_click = pygame.mouse.get_pressed()[0]
     
-    if left_click and mouse[1] > 70 and active_tool != 'bucket':
+    if left_click and mouse[0] > SidebarWidth and mouse[1] > ToolbarHeight and active_tool != 'bucket':
         if not drawingstroke:
             save_state()
             drawingstroke = True
@@ -127,7 +143,8 @@ while run:
 
     screen.blit(canvas, (0, 0))
 
-    if mouse[1] > 70:
+    #preview circle
+    if mouse[0] > SidebarWidth and mouse[1] > ToolbarHeight:
         preview_color = (255, 255, 255) if active_tool == "eraser" else active_color
         pygame.draw.circle(screen, active_color, mouse, active_size)
     
@@ -145,6 +162,8 @@ while run:
                         active_size = 20
                     elif i == 5:
                         active_tool = 'bucket'
+                    elif i == 6:
+                        active_tool = 'bombtool'
                     else:
                         active_tool = 'brush'
                         active_size = 20 - (i * 5)
@@ -163,7 +182,7 @@ while run:
                     undo_stack.append(canvas.copy())
                     canvas = redo_stack.pop()
             
-            elif event.pos[1] > 70 and active_tool == 'bucket':
+            elif event.pos[0] > SidebarWidth and event.pos[1] > ToolbarHeight and active_tool == 'bucket':
                 save_state()
                 flood_fill(canvas, event.pos, active_color)
                 drawingstroke = True
