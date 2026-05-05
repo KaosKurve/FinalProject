@@ -141,12 +141,12 @@ while run:
         
         pygame.draw.circle(canvas, color_to_use, mouse, active_size)
 
-    screen.blit(canvas, (0, 0))
+    screen.blit(canvas, (70, 70), (70, 70, Width-70, Height-70))
 
     #preview circle
     if mouse[0] > SidebarWidth and mouse[1] > ToolbarHeight:
         preview_color = (255, 255, 255) if active_tool == "eraser" else active_color
-        pygame.draw.circle(screen, active_color, mouse, active_size)
+        pygame.draw.circle(screen, preview_color, mouse, active_size, width = 4)
     
     brushes, colors, rgbs, undo_button, redo_button = draw_menu(active_size, active_color, active_tool)
 
