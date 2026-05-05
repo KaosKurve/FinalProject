@@ -20,7 +20,7 @@ redo_stack = []
 drawingstroke = False
 bombs = []
 bomb_delay = 2000
-explosion_size = 80
+explosion_size = 200
 
 
 def draw_menu(size, color, tool):
@@ -123,20 +123,25 @@ def flood_fill(surface, start_pos, fill_color):
         stack.append((x, y - 1))
 
     
-def draw_bomb(position, color):
+def draw_bomb(position, color, elapsed):
     x, y = position
+    tickingpulse = 15 + ((elapsed // 200) % 2)
+    if (elapsed // 300) % 2 == 0:
+        bomb_color = color
+    else:
+        bomb_color = "dark gray"
 
-    pygame.draw.circle(screen, color, (x, y), 15)
-    pygame.draw.rect(screen, color, (x-10, y-16, 20, 10))
-    pygame.draw.rect(screen, color, (x-2, y-23, 5, 10))
+    pygame.draw.circle(screen, bomb_color, (x, y), tickingpulse)
+    pygame.draw.rect(screen, bomb_color, (x-10, y-20, 20, 10),)
+    pygame.draw.rect(screen, bomb_color, (x-2, y-28, 5, 10))
 
 def explodebomb(position, color):
     x, y = position
     half = explosion_size // 2
 
-    pygame.draw.circle(canvas, color, (x, y), 20)
-    pygame.draw.rect(canvas, color, (x-half, y-10, explosion_size, 20))
-    pygame.draw.rect(canvas, color, (x-10, y-half, 20, explosion_size))
+    pygame.draw.circle(canvas, color, (x, y), 30)
+    pygame.draw.rect(canvas, color, (x-half, y-15, explosion_size, 30))
+    pygame.draw.rect(canvas, color, (x-15, y-half, 30, explosion_size))
 
 
 def save_state():
@@ -173,7 +178,7 @@ while run:
             explodebomb(bomb["pos"], bomb["color"])
             bombs.remove(bomb)
         else:
-            draw_bomb(bomb["pos"], bomb["color"])
+            draw_bomb(bomb["pos"], bomb["color"], elapsed)
 
     #preview circle
     if mouse[0] > SidebarWidth and mouse[1] > ToolbarHeight:
