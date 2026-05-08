@@ -75,11 +75,19 @@ def draw_menu(size, color, tool):
     elif tool == 'bombtool':
         pygame.draw.rect(screen, 'green', [10, 80, 50, 50], 3)
 
-    #undo/redo paint
+
+    #Utility Buttons
     redo_button = pygame.draw.rect(screen, 'black', [Width - 175, 10, 50, 50])
     pygame.draw.polygon(screen, 'white', ((Width - 165, 20), (Width - 135, 35), (Width - 165, 50)))
     undo_button = pygame.draw.rect(screen, 'black', [Width - 235, 10, 50, 50])
     pygame.draw.polygon(screen, 'white', ((Width - 195, 20), (Width - 225, 35), (Width - 195, 50)))
+    save_button = pygame.draw.rect(screen, 'black', [Width - 295, 10, 50, 50])
+    pygame.draw.rect(screen, 'white', [Width - 287, 18, 35, 35], width = 3)
+    pygame.draw.rect(screen, 'white', [Width - 280, 18, 20, 12], width = 3)
+    pygame.draw.rect(screen, 'white', [Width - 282, 33, 24, 20], width = 3)
+    clear_button = pygame.draw.rect(screen, 'black', [Width - 355, 10, 50, 50])
+    pygame.draw.line(screen, 'white', (Width - 316, 17), (Width - 346, 52), width=6)
+    pygame.draw.line(screen, 'white', (Width - 346, 17), (Width - 316, 52), width=6)
 
     #current color selected
     pygame.draw.circle(screen, color, (400, 35), 30)
@@ -98,7 +106,7 @@ def draw_menu(size, color, tool):
     color_rect = [blue, red, green, yellow, teal, purple, white, black]
     rgb_list = [(0, 0, 255), (255, 0, 0), (0, 255, 0), (255, 255, 0),
                 (0, 255, 255), (255, 0, 255),(0, 0, 0), (255, 255, 255)]
-    return brush_list, color_rect, rgb_list, undo_button, redo_button
+    return (brush_list, color_rect, rgb_list, undo_button, redo_button, save_button, clear_button)
 
 def flood_fill(surface, start_pos, fill_color):
     #paint bucket functionality
@@ -204,7 +212,7 @@ while run:
             pygame.draw.rect(screen, active_color, (x-2, y-23, 5, 10), 2)
 
     
-    brushes, colors, rgbs, undo_button, redo_button = draw_menu(active_size, active_color, active_tool)
+    brushes, colors, rgbs, undo_button, redo_button, save_button, clear_button = draw_menu(active_size, active_color, active_tool)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
