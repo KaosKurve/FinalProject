@@ -1,4 +1,5 @@
 import pygame
+import os
 pygame.init()
 
 #global variables
@@ -15,6 +16,10 @@ screen = pygame.display.set_mode([Width, Height])
 pygame.display.set_caption('My Painting App!')
 canvas = pygame.Surface((Width, Height))
 canvas.fill("white")
+savedfile = "savedart.png"
+if os.path.exists(savedfile):
+    saved_image = pygame.image.load(savedfile)
+    canvas.blit(saved_image, (0, 0))
 undo_stack = []
 redo_stack = []
 drawingstroke = False
@@ -236,6 +241,14 @@ while run:
                 if colors[i].collidepoint(event.pos):
                     active_color = rgbs[i]
 
+            if save_button.collidepoint(event.pos):
+                pygame.image.save(canvas, savedfile)
+
+            if clear_button.collidepoint(event.pos):
+                save_state()
+                canvas.fill("white")
+                bombs.clear()
+
             if undo_button.collidepoint(event.pos):
                 if undo_stack:
                     redo_stack.append(canvas.copy())
@@ -245,6 +258,7 @@ while run:
                 if redo_stack:
                     undo_stack.append(canvas.copy())
                     canvas = redo_stack.pop()
+            
             
             elif event.pos[0] > SidebarWidth and event.pos[1] > ToolbarHeight and active_tool == 'bucket':
                 save_state()
