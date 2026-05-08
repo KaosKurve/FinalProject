@@ -20,6 +20,8 @@ savedfile = "savedart.png"
 if os.path.exists(savedfile):
     saved_image = pygame.image.load(savedfile)
     canvas.blit(saved_image, (0, 0))
+    os.remove(savedfile)
+
 undo_stack = []
 redo_stack = []
 drawingstroke = False
@@ -183,7 +185,8 @@ while run:
         if prev_mouse is not None:
             mid_x = (prev_mouse[0] + mouse[0]) // 2
             mid_y = (prev_mouse[1] + mouse[1]) // 2
-            pygame.draw.line(canvas, color_to_use, prev_mouse, active_size * 2)
+            pygame.draw.line(canvas, color_to_use, prev_mouse, mouse, active_size * 2)
+            prev_mouse = mouse
         else:
             pygame.draw.circle(canvas, color_to_use, mouse, active_size)
 
