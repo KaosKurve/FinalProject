@@ -188,8 +188,21 @@ while run:
 
     #preview circle
     if mouse[0] > SidebarWidth and mouse[1] > ToolbarHeight:
-        preview_color = (255, 255, 255) if active_tool == "eraser" else active_color
-        pygame.draw.circle(screen, preview_color, mouse, active_size, width = 4)
+        if active_tool == "brush":
+            pygame.draw.circle(screen, active_color, mouse, active_size, width=4)
+        
+        elif active_tool == "eraser":
+            pygame.draw.circle(screen, "gray", mouse, active_size, width=4)
+
+        elif active_tool == "bucket":
+            pygame.draw.rect(screen, active_color, (mouse[0]-10, mouse[1]-10, 20, 20), 2)
+        
+        elif active_tool == "bombtool":
+            x, y = mouse
+            pygame.draw.circle(screen, active_color, (x, y), 15, 2)
+            pygame.draw.rect(screen, active_color, (x-10, y-16, 20, 10), 2)
+            pygame.draw.rect(screen, active_color, (x-2, y-23, 5, 10), 2)
+
     
     brushes, colors, rgbs, undo_button, redo_button = draw_menu(active_size, active_color, active_tool)
 
