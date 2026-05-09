@@ -59,8 +59,12 @@ def draw_menu(size, color, tool):
     pygame.draw.circle(screen, 'white', (35, 108), 15)
     pygame.draw.rect(screen, 'white', (25, 93, 20, 10))
     pygame.draw.rect(screen, 'white', (33, 86, 5, 10))
+    colorfilter = pygame.draw.rect(screen, 'black', [10, 540, 50, 50])
+    pygame.draw.circle(screen, 'white', (35, 560), 13, width = 3)
+    pygame.draw.circle(screen, 'white', (42, 570), 13, width = 3)
+    pygame.draw.circle(screen, 'white', (28, 570), 13, width = 3)
 
-    brush_list = [xl_brush, l_brush, m_brush, s_brush, eraser, bucket, bombtool]
+    brush_list = [xl_brush, l_brush, m_brush, s_brush, eraser, bucket, bombtool, colorfilter]
 
     #tool selection
     if tool == 'brush':
@@ -81,6 +85,9 @@ def draw_menu(size, color, tool):
     
     elif tool == 'bombtool':
         pygame.draw.rect(screen, 'green', [10, 80, 50, 50], 3)
+
+    elif tool == 'colorfilter':
+        pygame.draw.rect(screen, 'green', [10, 540, 50, 50], 3)
 
 
     #Utility Buttons
@@ -113,7 +120,7 @@ def draw_menu(size, color, tool):
     color_rect = [blue, red, green, yellow, teal, purple, white, black]
     rgb_list = [(0, 0, 255), (255, 0, 0), (0, 255, 0), (255, 255, 0),
                 (0, 255, 255), (255, 0, 255),(0, 0, 0), (255, 255, 255)]
-    return (brush_list, color_rect, rgb_list, undo_button, redo_button, save_button, clear_button)
+    return (brush_list, color_rect, rgb_list, undo_button, redo_button, save_button, clear_button, colorfilter)
 
 def flood_fill(surface, start_pos, fill_color):
     #paint bucket functionality
@@ -220,7 +227,7 @@ while run:
             pygame.draw.rect(screen, active_color, (x-2, y-23, 5, 10), 2)
 
     
-    brushes, colors, rgbs, undo_button, redo_button, save_button, clear_button = draw_menu(active_size, active_color, active_tool)
+    brushes, colors, rgbs, undo_button, redo_button, save_button, clear_button, colorfilter = draw_menu(active_size, active_color, active_tool)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
