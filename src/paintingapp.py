@@ -216,9 +216,11 @@ while run:
             mid_x = (prev_mouse[0] + mouse[0]) // 2
             mid_y = (prev_mouse[1] + mouse[1]) // 2
             pygame.draw.line(canvas, color_to_use, prev_mouse, mouse, active_size * 2)
-            prev_mouse = mouse
+            pygame.draw.circle(canvas, color_to_use, (mid_x, mid_y), active_size)
         else:
             pygame.draw.circle(canvas, color_to_use, mouse, active_size)
+        
+        prev_mouse = mouse
 
     display_canvas = get_filtered_canvas()
     screen.blit(display_canvas, (70, 70), (70, 70, Width-70, Height-70))
