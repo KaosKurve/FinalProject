@@ -21,7 +21,6 @@ if os.path.exists(savedfile):
     saved_image = pygame.image.load(savedfile)
     canvas.blit(saved_image, (0, 0))
     os.remove(savedfile)
-
 undo_stack = []
 redo_stack = []
 drawingstroke = False
@@ -29,6 +28,9 @@ bombs = []
 bomb_delay = 2000
 explosion_size = 200
 prev_mouse = None
+filter_modes = ["normal", "grayscale"]
+current_filter_index = 0
+original_filter = None
 
 
 def draw_menu(size, color, tool):
@@ -166,6 +168,28 @@ def explodebomb(position, color):
     pygame.draw.rect(canvas, color, (x-half, y-15, explosion_size, 30))
     pygame.draw.rect(canvas, color, (x-15, y-half, 30, explosion_size))
 
+def apply_filter(mode):
+    global canvas, original_filter
+    if mode != "normal" and original_filter is None:
+        original_filter = canvas.copy()
+
+    if mode == "normal":
+        if original_filter:
+            canvas = original_filter.copy()
+            original_filter = None
+        return
+    save_state()
+
+    temp_surface = original_filter.copy()
+    for x in range (SidebarWidth, Width):
+        for y in range (ToolbarHeight, Height):
+            r, g, b, a = temp_surface.get_at((x, y))
+            if mode == "grayscale":
+                gray = (r + g + b) // 3
+                temp_surface.set_at((x, y), (gray, gray, gray))
+    
+    canvas = temp_surface
+
 
 def save_state():
     undo_stack.append(canvas.copy())
@@ -243,6 +267,9 @@ while run:
                         active_tool = 'bucket'
                     elif i == 6:
                         active_tool = 'bombtool'
+                    elif i == 7:
+                        current_filter_index = (current_filter_index + 1) % len(filter_modes)
+                        apply_filter(filter_modes[current_filter_index])
                     else:
                         active_tool = 'brush'
                         active_size = 20 - (i * 5)
