@@ -104,6 +104,12 @@ def draw_menu(size, color, tool):
     clear_button = pygame.draw.rect(screen, 'black', [Width - 355, 10, 50, 50])
     pygame.draw.line(screen, 'white', (Width - 316, 17), (Width - 346, 52), width=6)
     pygame.draw.line(screen, 'white', (Width - 346, 17), (Width - 316, 52), width=6)
+    export_button = pygame.draw.rect(screen, 'black', [Width - 415, 10, 50, 50])
+    pygame.draw.rect(screen, 'white', [Width - 407, 22, 35, 30], width = 3)
+    pygame.draw.rect(screen, 'black', [Width - 400, 22, 20, 12])
+    pygame.draw.polygon(screen, 'white', ((Width - 380, 30), (Width - 390, 20), (Width - 400, 30)))
+    pygame.draw.rect(screen, 'white', [Width - 395, 25, 10, 20])
+    
 
     #current color selected
     pygame.draw.circle(screen, color, (400, 35), 30)
@@ -122,7 +128,9 @@ def draw_menu(size, color, tool):
     color_rect = [blue, red, green, yellow, teal, purple, white, black]
     rgb_list = [(0, 0, 255), (255, 0, 0), (0, 255, 0), (255, 255, 0),
                 (0, 255, 255), (255, 0, 255),(0, 0, 0), (255, 255, 255)]
-    return (brush_list, color_rect, rgb_list, undo_button, redo_button, save_button, clear_button, colorfilter)
+    return (brush_list, color_rect, rgb_list, undo_button,
+            redo_button, save_button, clear_button, colorfilter,
+            export_button)
 
 def flood_fill(surface, start_pos, fill_color):
     #paint bucket functionality
@@ -253,7 +261,9 @@ while run:
             pygame.draw.rect(screen, active_color, (x-2, y-23, 5, 10), 2)
 
     
-    brushes, colors, rgbs, undo_button, redo_button, save_button, clear_button, colorfilter = draw_menu(active_size, active_color, active_tool)
+    (brushes, colors, rgbs, undo_button,
+     redo_button, save_button, clear_button, colorfilter,
+     export_button) = draw_menu(active_size, active_color, active_tool)
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
@@ -281,7 +291,6 @@ while run:
                     active_color = rgbs[i]
 
             if save_button.collidepoint(event.pos):
-                saved_surface = canvas.copy()
                 pygame.image.save(canvas, savedfile)
 
             if clear_button.collidepoint(event.pos):
@@ -298,6 +307,20 @@ while run:
                 if redo_stack:
                     undo_stack.append(canvas.copy())
                     canvas = redo_stack.pop()
+
+            if export_button.collidepoint(event.pos):
+                export_surface = get_filtered_canvas()
+                cropped_surface = export_surface.subsurface(
+                    (SidebarWidth, ToolbarHeight,
+                     Width - SidebarWidth,
+                     Height - ToolbarHeight)
+                ).copy()
+                export_count = 1
+                export_name = f"exported_art_{export_count}.png"
+                while os.path.exists(export_name):
+                    export_count += 1
+                    export_name = f"exported_art_{export_count}.png"
+                pygame.image.save(cropped_surface, export_name)
             
             
             elif event.pos[0] > SidebarWidth and event.pos[1] > ToolbarHeight and active_tool == 'bucket':
