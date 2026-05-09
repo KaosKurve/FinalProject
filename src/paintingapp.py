@@ -32,6 +32,13 @@ filter_modes = ["normal", "grayscale", "invert",
                 "sepia", "blue", "red", "neon"]
 current_filter_index = 0
 current_filter = "normal"
+snake_active = False
+snake_body = []
+snake_direction = None
+snake_move_delay = 100
+last_snake_move = 0
+snake_color = (255, 255, 255)
+snake_block_size = 20
 
 def draw_menu(size, color, tool):
     #toolbar
@@ -228,8 +235,9 @@ while run:
     mouse = pygame.mouse.get_pos()
     left_click = pygame.mouse.get_pressed()[0]
     
-    if (left_click and mouse[0] > SidebarWidth and mouse[1] > ToolbarHeight
-        and active_tool not in ['bucket', 'bombtool']):
+    if (left_click and not snake_active and 
+        mouse[0] > SidebarWidth and mouse[1] > ToolbarHeight
+        and active_tool not in ['bucket', 'bombtool', 'snaketool']):
         if not drawingstroke:
             save_state()
             drawingstroke = True
@@ -290,7 +298,7 @@ while run:
         if event.type == pygame.QUIT:
             run = False
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN and not snake_active:
             for i in range(len(brushes)):
                 if brushes[i].collidepoint(event.pos):
                     if i == 4:
@@ -357,6 +365,15 @@ while run:
                     "time": pygame.time.get_ticks(),
                     "color": active_color
                 })
+
+            elif (event.pos[0] > SidebarWidth and event.pos[1] > ToolbarHeight
+                  and active_tool == "snaketool" and not snake_active):
+                snake_active = True
+                snake_color = active_color
+                start_x = (event.pos[0] // snake_block_size) * snake_block_size
+                start_y = (event.pos[1] // snake_block_size) * snake_block_size
+                snake_body = [(start_x, start_y)]
+                snake_direction = None
 
         if event.type == pygame.MOUSEBUTTONUP:
             drawingstroke = False
