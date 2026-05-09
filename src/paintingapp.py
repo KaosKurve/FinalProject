@@ -3,7 +3,7 @@ import os
 pygame.init()
 
 #global variables
-fps = 240
+fps = 60
 timer = pygame.time.Clock()
 Width = 900
 Height = 600
@@ -29,10 +29,9 @@ bomb_delay = 2000
 explosion_size = 200
 prev_mouse = None
 filter_modes = ["normal", "grayscale", "invert",
-                "sepia", "blue", "neon"]
+                "sepia", "blue", "red", "neon"]
 current_filter_index = 0
 current_filter = "normal"
-
 
 def draw_menu(size, color, tool):
     #toolbar
@@ -62,12 +61,17 @@ def draw_menu(size, color, tool):
     pygame.draw.circle(screen, 'white', (35, 108), 15)
     pygame.draw.rect(screen, 'white', (25, 93, 20, 10))
     pygame.draw.rect(screen, 'white', (33, 86, 5, 10))
+    snaketool = pygame.draw.rect(screen, 'black', [10, 140, 50, 50])
+    pygame.draw.rect(screen, 'white', [15, 147, 40, 20], width = 5)
+    pygame.draw.rect(screen, 'white', [15, 162, 40, 20], width = 5)
+    pygame.draw.rect(screen, 'black', [50, 152, 7, 10])
+    pygame.draw.rect(screen, 'black', [15, 167, 7, 10])
     colorfilter = pygame.draw.rect(screen, 'black', [10, 540, 50, 50])
     pygame.draw.circle(screen, 'white', (35, 560), 13, width = 3)
     pygame.draw.circle(screen, 'white', (42, 570), 13, width = 3)
     pygame.draw.circle(screen, 'white', (28, 570), 13, width = 3)
 
-    brush_list = [xl_brush, l_brush, m_brush, s_brush, eraser, bucket, bombtool, colorfilter]
+    brush_list = [xl_brush, l_brush, m_brush, s_brush, eraser, bucket, bombtool, snaketool, colorfilter]
 
     #tool selection
     if tool == 'brush':
@@ -91,6 +95,9 @@ def draw_menu(size, color, tool):
 
     elif tool == 'colorfilter':
         pygame.draw.rect(screen, 'green', [10, 540, 50, 50], 3)
+
+    elif tool == 'snaketool':
+        pygame.draw.rect(screen, 'black', [10, 140, 50, 50], 3)
 
 
     #Utility Buttons
@@ -204,6 +211,12 @@ def get_filtered_canvas():
                 filtered_canvas.set_at((x, y), (r, g, min(255, b+80)))
             elif current_filter == "red":
                 filtered_canvas.set_at((x, y), (min(255, r+80), g, b))
+            elif current_filter == "neon":
+                filtered_canvas.set_at((x, y), (
+                    min(255, r * 2),
+                    min(255, g * 2),
+                    min(255, b * 2)
+                ))
     
     return filtered_canvas
 
@@ -226,17 +239,20 @@ while run:
             color_to_use = active_color
         
         if prev_mouse is not None:
-            mid_x = (prev_mouse[0] + mouse[0]) // 2
-            mid_y = (prev_mouse[1] + mouse[1]) // 2
+            midpoint = ((prev_mouse[0] + mouse[0]) // 2, (prev_mouse[1] + mouse[1]) // 2)
             pygame.draw.line(canvas, color_to_use, prev_mouse, mouse, active_size * 2)
-            pygame.draw.circle(canvas, color_to_use, (mid_x, mid_y), active_size)
+            pygame.draw.circle(canvas, color_to_use, midpoint, active_size)
         else:
             pygame.draw.circle(canvas, color_to_use, mouse, active_size)
         
         prev_mouse = mouse
 
-    display_canvas = get_filtered_canvas()
-    screen.blit(display_canvas, (70, 70), (70, 70, Width-70, Height-70))
+    filtered_display_canvas = canvas.copy()
+    filter_needs_update = True
+    if filter_needs_update:
+        filtered_display_canvas = get_filtered_canvas()
+        filter_needs_update = False
+    screen.blit(filtered_display_canvas, (70, 70), (70, 70, Width-70, Height-70))
     current_time = pygame.time.get_ticks()
 
     for bomb in bombs[:]:
@@ -285,6 +301,8 @@ while run:
                     elif i == 6:
                         active_tool = 'bombtool'
                     elif i == 7:
+                        active_tool = "snaketool"
+                    elif i == 8:
                         current_filter_index = (current_filter_index + 1) % len(filter_modes)
                         current_filter = filter_modes[current_filter_index]
                     else:
