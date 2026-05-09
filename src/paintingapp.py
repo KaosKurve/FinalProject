@@ -28,9 +28,9 @@ bombs = []
 bomb_delay = 2000
 explosion_size = 200
 prev_mouse = None
-filter_modes = ["normal", "grayscale"]
+filter_modes = ["normal", "grayscale", "invert", "sepia"]
 current_filter_index = 0
-original_filter = None
+current_filter = "normal"
 
 
 def draw_menu(size, color, tool):
@@ -168,32 +168,31 @@ def explodebomb(position, color):
     pygame.draw.rect(canvas, color, (x-half, y-15, explosion_size, 30))
     pygame.draw.rect(canvas, color, (x-15, y-half, 30, explosion_size))
 
-def apply_filter(mode):
-    global canvas, original_filter
-    if mode != "normal" and original_filter is None:
-        original_filter = canvas.copy()
-
-    if mode == "normal":
-        if original_filter:
-            canvas = original_filter.copy()
-            original_filter = None
-        return
-    save_state()
-
-    temp_surface = original_filter.copy()
-    for x in range (SidebarWidth, Width):
-        for y in range (ToolbarHeight, Height):
-            r, g, b, a = temp_surface.get_at((x, y))
-            if mode == "grayscale":
-                gray = (r + g + b) // 3
-                temp_surface.set_at((x, y), (gray, gray, gray))
-    
-    canvas = temp_surface
-
 
 def save_state():
     undo_stack.append(canvas.copy())
     redo_stack.clear()
+
+def get_filtered_canvas():
+    filtered_canvas = canvas.copy()
+    if current_filter == "normal":
+        return filtered_canvas
+    
+    for x in range(SidebarWidth, Width):
+        for y in range(ToolbarHeight, Height):
+            r, g, b, a = filtered_canvas.get_at((x, y))
+            if current_filter == "grayscale":
+                gray = int(0.299*r + 0.586*g + 0.114*b)
+                filtered_canvas.set_at((x, y), (gray, gray, gray))
+            elif current_filter == "invert":
+                filtered_canvas.set_at((x, y), (255-r, 255-g, 255-b))
+            elif current_filter == "sepia":
+                tr = min(255, int(0.393*r + 0.769*g + 0.189*b))
+                tg = min(255, int(0.349*r + 0.686*g + 0.168*b))
+                tb = min(255, int(0.272*r + 0.534*g + 0.131*b))
+                filtered_canvas.set_at((x, y), (tr, tg, tb))
+    
+    return filtered_canvas
 
 run = True
 while run:
@@ -221,7 +220,8 @@ while run:
         else:
             pygame.draw.circle(canvas, color_to_use, mouse, active_size)
 
-    screen.blit(canvas, (70, 70), (70, 70, Width-70, Height-70))
+    display_canvas = get_filtered_canvas()
+    screen.blit(display_canvas, (70, 70), (70, 70, Width-70, Height-70))
     current_time = pygame.time.get_ticks()
 
     for bomb in bombs[:]:
@@ -269,7 +269,7 @@ while run:
                         active_tool = 'bombtool'
                     elif i == 7:
                         current_filter_index = (current_filter_index + 1) % len(filter_modes)
-                        apply_filter(filter_modes[current_filter_index])
+                        current_filter = filter_modes[current_filter_index]
                     else:
                         active_tool = 'brush'
                         active_size = 20 - (i * 5)
@@ -279,6 +279,7 @@ while run:
                     active_color = rgbs[i]
 
             if save_button.collidepoint(event.pos):
+                saved_surface = canvas.copy()
                 pygame.image.save(canvas, savedfile)
 
             if clear_button.collidepoint(event.pos):
