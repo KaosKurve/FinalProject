@@ -28,7 +28,8 @@ bombs = []
 bomb_delay = 2000
 explosion_size = 200
 prev_mouse = None
-filter_modes = ["normal", "grayscale", "invert", "sepia"]
+filter_modes = ["normal", "grayscale", "invert",
+                "sepia", "blue", "neon"]
 current_filter_index = 0
 current_filter = "normal"
 
@@ -199,6 +200,10 @@ def get_filtered_canvas():
                 tg = min(255, int(0.349*r + 0.686*g + 0.168*b))
                 tb = min(255, int(0.272*r + 0.534*g + 0.131*b))
                 filtered_canvas.set_at((x, y), (tr, tg, tb))
+            elif current_filter == "blue":
+                filtered_canvas.set_at((x, y), (r, g, min(255, b+80)))
+            elif current_filter == "red":
+                filtered_canvas.set_at((x, y), (min(255, r+80), g, b))
     
     return filtered_canvas
 
