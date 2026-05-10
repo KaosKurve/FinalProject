@@ -5,8 +5,8 @@ pygame.init()
 #global variables
 fps = 60
 timer = pygame.time.Clock()
-Width = 900
-Height = 600
+Width = 910
+Height = 610
 ToolbarHeight = 70
 SidebarWidth = 70
 active_size = 0
@@ -39,6 +39,8 @@ snake_move_delay = 100
 last_snake_move = 0
 snake_color = (255, 255, 255)
 snake_block_size = 20
+snake_max_x = Width - ((Width - SidebarWidth) % snake_block_size)
+snake_max_y = Height - ((Height - ToolbarHeight) % snake_block_size)
 
 def draw_menu(size, color, tool):
     #toolbar
@@ -227,6 +229,15 @@ def get_filtered_canvas():
     
     return filtered_canvas
 
+def stamp_snake():
+    global snake_body, snake_active, snake_direction
+    save_state()
+    for segment in snake_body:
+        pygame.draw.rect(canvas, snake_color, (segment[0], segment[1], snake_block_size, snake_block_size))
+    snake_active = False
+    snake_direction = None
+    snake_body = []
+
 run = True
 while run:
     timer.tick(fps)
@@ -273,17 +284,11 @@ while run:
             dx, dy = snake_direction
             new_head = (head_x + dx, head_y + dy)
             if (new_head[0] < SidebarWidth or
-                new_head[0] >= Width or
+                new_head[0] > snake_max_x - snake_block_size or
                 new_head[1] < ToolbarHeight or
-                new_head[1] >= Height or
+                new_head[1] > snake_max_y - snake_block_size or
                 new_head in snake_body):
-                save_state()
-                for segment in snake_body:
-                    pygame.draw.rect(screen, snake_color, (segment[0], segment[1], snake_block_size, snake_block_size))
-
-                snake_active = False
-                snake_direction = None
-                snake_body = []
+                stamp_snake()
             else:
                 snake_body.append(new_head)
 
@@ -394,8 +399,8 @@ while run:
                   and active_tool == "snaketool" and not snake_active):
                 snake_active = True
                 snake_color = active_color
-                start_x = (event.pos[0] // snake_block_size) * snake_block_size
-                start_y = (event.pos[1] // snake_block_size) * snake_block_size
+                start_x = ((event.pos[0] - SidebarWidth) // snake_block_size) * snake_block_size + SidebarWidth
+                start_y = ((event.pos[1] - ToolbarHeight) // snake_block_size) * snake_block_size + ToolbarHeight
                 snake_body = [(start_x, start_y)]
                 snake_direction = None
 
@@ -424,13 +429,17 @@ while run:
 
             if snake_active:
                 if event.key == pygame.K_w:
-                    snake_direction = (0, -snake_block_size)
+                    if snake_direction != (0, snake_block_size):
+                        snake_direction = (0, -snake_block_size)
                 elif event.key == pygame.K_s:
-                    snake_direction = (0, snake_block_size)
+                    if snake_direction != (0, -snake_block_size):
+                        snake_direction = (0, snake_block_size)
                 elif event.key == pygame.K_a:
-                    snake_direction = (-snake_block_size, 0)
+                    if snake_direction != (snake_block_size, 0):
+                        snake_direction = (-snake_block_size, 0)
                 elif event.key == pygame.K_d:
-                    snake_direction = (snake_block_size, 0)
+                    if snake_direction != (-snake_block_size, 0):
+                        snake_direction = (snake_block_size, 0)
 
     pygame.display.flip()
 pygame.quit()
