@@ -1,0 +1,44 @@
+# Final Proposal Document
+
+## Repository
+https://github.com/KaosKurve/FinalProject
+
+## Description
+1-2 sentence description of what it will do and how it relevant to media and digital arts.
+Create a simple but fun art program that allows users to draw and color whatever they may please. I should implement tools that will allow artists to try and have fun and experiement with their creativity while creating their art piece
+
+## Features
+- Basic Drawing Functions
+	- The program will contain basic art program needs like a basic drawing brush, eraser, undo button, and color selector
+- Fun art tools
+	- The program can also provide unique and fun tools for users to play around with. For example, a paint bomb that can be placed and explodes with color after a short amount of time
+- Filters and Exportation
+	- After finishing an art piece, users can also select a filter to put over their pieces to add extra flair. They could make it grayscale, add a color filter, put a guassian blur filter around the edges, or add an overlay of hearts. After finishing their masterpieces, they can export the art onto their personal computer
+
+## Challenges
+- One of the biggest challenges I fear would be learning how to implement the basic drawing features, since there are already so many features to try and implement in
+- I need to do some research on unique functions or mechanics  I can try and add to my art program that will stand out, but will also be fun to use in-game (like the paint bomb idea)
+- I need to properly research different blending modes and filter features I can use to see what different kinds of filters I can apply to the drawings made
+
+## Outcomes
+Ideal Outcome:
+- The ideal outcome is to make a drawing program that can draw, erase, undo lines, change color, fill in shapes with a bucket tool, change brush sizes, and even implement multiple layers. The program could have a wide variety of fun tools the user can play with that all do unique things to allow experimentation and let users come up with unique ways to use these tools for their art. After finishing an art piece, the user can choose from different types of filter modes to go through to further express their creativity, like a photo-negative filter, an old photo filter, or even a filter that will allow users to create their own unique overly ontop of their drawing. They can then export their finished drawing onto their own computer for safekeeping.
+
+Minimal Viable Outcome:
+- The most minimal viable outcome would be having a simple drawing program that allows the user to draw on the canvas, can erase what they drew, and can change the color of their brush to a select number of colors. The program has implemented one or two unique functions that allow the use and play with while drawing. After finishing drawing, the user can select three or four different filter modes that they can add on top of the drawing, like a grayscale or blue-ish color filter. The image can then be saved onto the user's computer.
+
+## Milestones
+
+- Week 1
+  1. Implement basic drawing tools (brush, erase, undo, color change)
+  2. try and set-up one of the unique functions (paint bomb)
+
+- Week 2
+  1. Come up with one or two more unique functions to add to the program
+  2. Implement one or two of the color filter modes in the program
+  Extra: add bucket tool or multiple layers
+
+- Week N (Final)
+  1. Add new functions or clean up/fix the final number of functions
+  2. Add new filters or clean up/fix the final number of filters
+  3. Create the ability to export the final image to save onto your computer
