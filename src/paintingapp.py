@@ -9,7 +9,7 @@ Width = 910
 Height = 610
 ToolbarHeight = 70
 SidebarWidth = 70
-active_size = 0
+active_size = 10
 active_color = 'white'
 active_tool = 'brush'
 screen = pygame.display.set_mode([Width, Height])
@@ -196,6 +196,8 @@ def explodebomb(position, color):
 
 def save_state():
     undo_stack.append(canvas.copy())
+    if len(undo_stack) > 30:
+        undo_stack.pop(0)
     redo_stack.clear()
 
 def get_filtered_canvas():
@@ -238,6 +240,25 @@ def stamp_snake():
     snake_direction = None
     snake_body = []
 
+def undo_canvas():
+    global canvas, filter_needs_update
+    if len(undo_stack) > 0:
+        redo_stack.append(canvas.copy())
+        canvas = undo_stack.pop()
+        filter_needs_update = True
+
+def redo_canvas():
+    global canvas, filter_needs_update
+    if len(redo_stack) > 0:
+        undo_stack.append(canvas.copy())
+        canvas = redo_stack.pop()
+        filter_needs_update = True
+
+
+filtered_display_canvas = canvas.copy()
+filter_needs_update = True
+
+
 run = True
 while run:
     timer.tick(fps)
@@ -266,12 +287,12 @@ while run:
         
         prev_mouse = mouse
 
-    filtered_display_canvas = canvas.copy()
-    filter_needs_update = True
     if filter_needs_update:
         filtered_display_canvas = get_filtered_canvas()
         filter_needs_update = False
-    screen.blit(filtered_display_canvas, (70, 70), (70, 70, Width-70, Height-70))
+    screen.blit(filtered_display_canvas, (SidebarWidth, ToolbarHeight),
+    (SidebarWidth, ToolbarHeight, Width - SidebarWidth, Height - ToolbarHeight))
+    filter_needs_update = True
     for segment in snake_body:
         pygame.draw.rect(screen, snake_color, (segment[0], segment[1], snake_block_size, snake_block_size))
     current_time = pygame.time.get_ticks()
@@ -359,14 +380,10 @@ while run:
                 bombs.clear()
 
             if undo_button.collidepoint(event.pos):
-                if undo_stack:
-                    redo_stack.append(canvas.copy())
-                    canvas = undo_stack.pop()
+                undo_canvas()
             
             if redo_button.collidepoint(event.pos):
-                if redo_stack:
-                    undo_stack.append(canvas.copy())
-                    canvas = redo_stack.pop()
+                redo_canvas()
 
             if export_button.collidepoint(event.pos):
                 export_surface = get_filtered_canvas()
@@ -418,14 +435,10 @@ while run:
 
             if keys[pygame.K_LCTRL] or keys[pygame.K_RCTRL]:
                 if event.key == pygame.K_z:
-                    if undo_stack:
-                        redo_stack.append(canvas.copy())
-                        canvas = undo_stack.pop()
+                    undo_canvas()
             
                 elif event.key == pygame.K_y:
-                    if redo_stack:
-                        undo_stack.append(canvas.copy())
-                        canvas = redo_stack.pop()
+                    redo_canvas()
 
             if snake_active:
                 if event.key == pygame.K_w:
