@@ -104,7 +104,7 @@ def draw_menu(size, color, tool):
         pygame.draw.rect(screen, 'green', [10, 540, 50, 50], 3)
 
     elif tool == 'snaketool':
-        pygame.draw.rect(screen, 'black', [10, 140, 50, 50], 3)
+        pygame.draw.rect(screen, 'green', [10, 140, 50, 50], 3)
 
 
     #Utility Buttons
@@ -261,7 +261,31 @@ while run:
         filtered_display_canvas = get_filtered_canvas()
         filter_needs_update = False
     screen.blit(filtered_display_canvas, (70, 70), (70, 70, Width-70, Height-70))
+    for segment in snake_body:
+        pygame.draw.rect(screen, snake_color, (segment[0], segment[1], snake_block_size, snake_block_size))
     current_time = pygame.time.get_ticks()
+
+    if snake_active and snake_direction:
+        current_time = pygame.time.get_ticks()
+        if current_time - last_snake_move > snake_move_delay:
+            last_snake_move = current_time
+            head_x, head_y = snake_body[-1]
+            dx, dy = snake_direction
+            new_head = (head_x + dx, head_y + dy)
+            if (new_head[0] < SidebarWidth or
+                new_head[0] >= Width or
+                new_head[1] < ToolbarHeight or
+                new_head[1] >= Height or
+                new_head in snake_body):
+                save_state()
+                for segment in snake_body:
+                    pygame.draw.rect(screen, snake_color, (segment[0], segment[1], snake_block_size, snake_block_size))
+
+                snake_active = False
+                snake_direction = None
+                snake_body = []
+            else:
+                snake_body.append(new_head)
 
     for bomb in bombs[:]:
         elapsed = current_time - bomb['time']
@@ -375,6 +399,7 @@ while run:
                 snake_body = [(start_x, start_y)]
                 snake_direction = None
 
+
         if event.type == pygame.MOUSEBUTTONUP:
             drawingstroke = False
             prev_mouse = None
@@ -396,6 +421,16 @@ while run:
                     if redo_stack:
                         undo_stack.append(canvas.copy())
                         canvas = redo_stack.pop()
+
+            if snake_active:
+                if event.key == pygame.K_w:
+                    snake_direction = (0, -snake_block_size)
+                elif event.key == pygame.K_s:
+                    snake_direction = (0, snake_block_size)
+                elif event.key == pygame.K_a:
+                    snake_direction = (-snake_block_size, 0)
+                elif event.key == pygame.K_d:
+                    snake_direction = (snake_block_size, 0)
 
     pygame.display.flip()
 pygame.quit()
